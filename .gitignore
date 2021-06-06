@@ -1,0 +1,9 @@
+.idea
+venv
+user_data/config.json
+user_data/hyperopt_results
+user_data/hyperopt.lock
+user_data/notebooks
+
+
+
