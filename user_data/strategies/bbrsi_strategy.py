@@ -21,26 +21,21 @@ class BBRSIStrategy(IStrategy):
 
     # Minimal ROI designed for the strategy.
     minimal_roi = {
-        "60": 0.01,
-        "30": 0.02,
-        "0": 0.04
+        "0": 0.183,
+        "55": 0.09,
+        "230": 0.06,
+        "585": 0
     }
 
     # Optimal stoploss designed for the strategy.
-    stoploss = -0.10
+    stoploss = -0.347
 
     # Trailing stoploss
     trailing_stop = False
-    # trailing_only_offset_is_reached = False
-    # trailing_stop_positive = 0.01
-    # trailing_stop_positive_offset = 0.0  # Disabled / not configured
 
     # Hyperoptable parameters
     buy_rsi = IntParameter(low=1, high=50, default=30, space='buy', optimize=True, load=True)
     sell_rsi = IntParameter(low=50, high=100, default=70, space='sell', optimize=True, load=True)
-
-    # Optimal timeframe for the strategy.
-    timeframe = '5m'
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
@@ -109,7 +104,7 @@ class BBRSIStrategy(IStrategy):
 
         # Bollinger bands
         bollinger = qtpylib.bollinger_bands(qtpylib.typical_price(dataframe),
-                                            window=20, stds=2)
+                                            window=20, stds=1)
         dataframe['bb_upperband'] = bollinger['upper']
         dataframe['bb_midband'] = bollinger['mid']
         dataframe['bb_lowerband'] = bollinger['lower']
@@ -126,7 +121,7 @@ class BBRSIStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                (dataframe['rsi'] > 25) &
+                # (dataframe['rsi'] > 17) &
                 (dataframe['close'] < dataframe['bb_lowerband'])
             ),
             'buy'] = 1
@@ -143,8 +138,8 @@ class BBRSIStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                (dataframe['rsi'] > 70) &
-                (dataframe['close'] < dataframe['bb_midband'])
+                (dataframe['rsi'] > 59) &
+                (dataframe['close'] < dataframe['bb_upperband'])
             ),
             'sell'] = 1
         return dataframe
