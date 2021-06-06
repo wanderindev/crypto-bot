@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to Crypto Bot 👋</h1>
+<h1 align="center">Welcome to Crypto Bot :robot:</h1>
 <p>
   <img src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
   <a href="https://github.com/wanderindev/crypto-bot/blob/master/README.md">
@@ -17,7 +17,7 @@
 
 ## About
 This project contains a bot I use to automate cryptocurrency trading on Binance.  The
-bot was built and configure using the [Freqtrade](https://www.freqtrade.io) library.
+bot was built and configured using the [Freqtrade](https://www.freqtrade.io) library.
 
 ## How to use
 To use the project in your development machine, clone it, and go to the project's root:
@@ -29,7 +29,7 @@ cd crypto-bot
 
 ### Configuration
 In the ```user_data``` directory, you will find a ```config.json.example``` file.  This file
-contains the bot configuration.  Rename the file to ```config.json```.
+contains the bot's configuration.  Rename the file to ```config.json```.
 
 ```sh
 mv user_data/config.json.example user_data/config.json
@@ -81,10 +81,10 @@ are available in the [documentation](https://www.freqtrade.io/en/stable/telegram
 
 ### Strategy
 The ```user_data/strategies``` directory contains the strategies.  In my case, there's only
-one strategy called ```BBRSIStrategy``` which was based in the [Relative Strngth Index](https://www.investopedia.com/terms/r/rsi.asp) and the 
+one strategy called ```BBRSIStrategy``` which was based in the [Relative Strength Index](https://www.investopedia.com/terms/r/rsi.asp) and the 
 [Bollinger Bands](https://www.investopedia.com/terms/b/bollingerbands.asp).
 
-This strategy has been optimized using ```hyperopt``` (detail below).
+This strategy has been optimized using ```hyperopt``` (details below).
 
 Review the [documentation](https://www.freqtrade.io/en/stable/strategy-customization/) for
 information on how to develop your own strategy.
