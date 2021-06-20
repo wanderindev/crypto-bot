@@ -202,3 +202,5 @@ class BBRSIStrategy(IStrategy):
             dataframe.loc[
                 reduce(lambda x, y: x & y, conditions),
                 'sell'] = 1
+
+        return dataframe
