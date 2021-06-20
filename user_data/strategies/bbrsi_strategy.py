@@ -5,6 +5,7 @@
 import numpy as np  # noqa
 import pandas as pd  # noqa
 from pandas import DataFrame
+from functools import reduce
 
 from freqtrade.strategy import IStrategy
 from freqtrade.strategy import CategoricalParameter, DecimalParameter, IntParameter
@@ -21,21 +22,41 @@ class BBRSIStrategy(IStrategy):
 
     # Minimal ROI designed for the strategy.
     minimal_roi = {
-        "0": 0.183,
-        "55": 0.09,
-        "230": 0.06,
-        "585": 0
+        "0": 0.319,
+        "116": 0.121,
+        "285": 0.051,
+        "483": 0
     }
 
     # Optimal stoploss designed for the strategy.
-    stoploss = -0.347
+    stoploss = -0.207
 
     # Trailing stoploss
-    trailing_stop = False
+    trailing_stop = True
+    trailing_stop_positive = 0.038
+    trailing_stop_positive_offset = 0.138
+    trailing_only_offset_is_reached = True
 
     # Hyperoptable parameters
-    buy_rsi = IntParameter(low=1, high=50, default=30, space='buy', optimize=True, load=True)
-    sell_rsi = IntParameter(low=50, high=100, default=70, space='sell', optimize=True, load=True)
+    buy_rsi = IntParameter(low=10, high=50, default=30,
+                           space='buy', optimize=True, load=True)
+    buy_rsi_enabled = CategoricalParameter([True, False],
+                                           default=True,
+                                           space='buy')
+    buy_trigger = CategoricalParameter(['bb_lower_1',
+                                        'bb_lower_2',
+                                        'bb_lower_3'],
+                                       default='bb_lower_2', space='buy')
+    sell_rsi = IntParameter(low=50, high=90, default=70,
+                            space='sell', optimize=True, load=True)
+    sell_rsi_enabled = CategoricalParameter([True, False],
+                                           default=True,
+                                           space='sell')
+    sell_trigger = CategoricalParameter(['bb_middle_1',
+                                         'bb_upper_1',
+                                         'bb_upper_2',
+                                         'bb_upper_3',],
+                                        default='bb_upper_2', space='sell')
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
@@ -102,12 +123,21 @@ class BBRSIStrategy(IStrategy):
         # RSI
         dataframe['rsi'] = ta.RSI(dataframe)
 
-        # Bollinger bands
-        bollinger = qtpylib.bollinger_bands(qtpylib.typical_price(dataframe),
-                                            window=20, stds=1)
-        dataframe['bb_upperband'] = bollinger['upper']
-        dataframe['bb_midband'] = bollinger['mid']
-        dataframe['bb_lowerband'] = bollinger['lower']
+        # Bollinger bands 1 standard deviation
+        bb_1std = ta.BBANDS(dataframe, timeperiod=20, nbdevup=1.0, nbdevdn=1.0)
+        dataframe['bb_lowerband_1'] = bb_1std['lowerband']
+        dataframe['bb_middleband_1'] = bb_1std['middleband']
+        dataframe['bb_upperband_1'] = bb_1std['upperband']
+
+        # Bollinger bands 2 standard deviations
+        bb_2std = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
+        dataframe['bb_lowerband_2'] = bb_2std['lowerband']
+        dataframe['bb_upperband_2'] = bb_2std['upperband']
+
+        # Bollinger bands 3 standard deviations
+        bb_3std = ta.BBANDS(dataframe, timeperiod=20, nbdevup=3.0, nbdevdn=3.0)
+        dataframe['bb_lowerband_3'] = bb_3std['lowerband']
+        dataframe['bb_upperband_3'] = bb_3std['upperband']
 
         return dataframe
 
@@ -119,12 +149,26 @@ class BBRSIStrategy(IStrategy):
         :param metadata: Additional information, like the currently traded pair
         :return: DataFrame with buy column
         """
-        dataframe.loc[
-            (
-                # (dataframe['rsi'] > 17) &
-                (dataframe['close'] < dataframe['bb_lowerband'])
-            ),
-            'buy'] = 1
+        conditions = []
+
+        # Guards and trends
+        if self.buy_rsi_enabled.value:
+            conditions.append(dataframe['rsi'] <= self.buy_rsi.value)
+
+        # Triggers
+        if self.buy_trigger.value == 'bb_lower_1':
+            conditions.append(dataframe['close'] < dataframe['bb_lowerband_1'])
+        elif self.buy_trigger.value == 'bb_lower_2':
+            conditions.append(dataframe['close'] < dataframe['bb_lowerband_2'])
+        elif self.buy_trigger.value == 'bb_lower_3':
+            conditions.append(dataframe['close'] < dataframe['bb_lowerband_3'])
+
+        conditions.append(dataframe['volume'] > 0)
+
+        if conditions:
+            dataframe.loc[
+                reduce(lambda x, y: x & y, conditions),
+                'buy'] = 1
 
         return dataframe
 
@@ -136,10 +180,25 @@ class BBRSIStrategy(IStrategy):
         :param metadata: Additional information, like the currently traded pair
         :return: DataFrame with sell column
         """
-        dataframe.loc[
-            (
-                (dataframe['rsi'] > 59) &
-                (dataframe['close'] < dataframe['bb_upperband'])
-            ),
-            'sell'] = 1
-        return dataframe
+        conditions = []
+
+        # Guards and trends
+        if self.sell_rsi_enabled.value:
+            conditions.append(dataframe['rsi'] > self.sell_rsi.value)
+
+        # Triggers
+        if self.sell_trigger.value == 'bb_middle_1':
+            conditions.append(dataframe['close'] > dataframe['bb_middleband_1'])
+        elif self.sell_trigger.value == 'bb_upper_1':
+            conditions.append(dataframe['close'] > dataframe['bb_upperband_1'])
+        elif self.sell_trigger.value == 'bb_upper_2':
+            conditions.append(dataframe['close'] > dataframe['bb_upperband_2'])
+        elif self.sell_trigger.value == 'bb_upper_3':
+            conditions.append(dataframe['close'] > dataframe['bb_upperband_3'])
+
+        conditions.append(dataframe['volume'] > 0)
+
+        if conditions:
+            dataframe.loc[
+                reduce(lambda x, y: x & y, conditions),
+                'sell'] = 1
