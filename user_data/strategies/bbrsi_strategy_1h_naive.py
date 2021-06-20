@@ -17,7 +17,7 @@ import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 
 # Strategy based on Bollinger Bands (BB) and Relative Strength Index (RSI)
-class BBRSIStrategy(IStrategy):
+class BBRSIStrategy1hNaive(IStrategy):
     INTERFACE_VERSION = 2
 
     # Minimal ROI designed for the strategy.
