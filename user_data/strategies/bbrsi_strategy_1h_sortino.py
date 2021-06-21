@@ -33,9 +33,9 @@ class BBRSIStrategy1hSortino(IStrategy):
 
     # Trailing stoploss
     trailing_stop = True
-    trailing_stop_positive = 0.038
-    trailing_stop_positive_offset = 0.138
-    trailing_only_offset_is_reached = True
+    trailing_stop_positive = 0.045
+    trailing_stop_positive_offset = 0.139
+    trailing_only_offset_is_reached = False
 
     # Hyperoptable parameters
     buy_rsi = IntParameter(low=10, high=50, default=21,
