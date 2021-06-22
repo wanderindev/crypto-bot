@@ -32,7 +32,7 @@ In the ```user_data``` directory, you will find a ```config.json.example``` file
 contains the bots' configuration.  Rename the file to ```config.json```.
 
 ```sh
-cp user_data/config.json.example user_data/config.json
+mv user_data/config.json.example user_data/config.json
 ```
 
 You will be adding secret keys to this file so make sure it is kept out of version control by
@@ -41,7 +41,7 @@ adding ```user_data/config.json``` to the ```.gitignore``` file.
 There are many configuration options for the bot.  Visit the 
 [configuration](https://www.freqtrade.io/en/stable/configuration/) page in the Freqtrade
 documentation to get familiar with them and adjust the ```config.json``` file as per your
-needs and goals for the bot.
+needs and goals for your bots.
 
 Below, I discuss a few of these options.
 
@@ -52,7 +52,7 @@ the bots will use fake money.  When you are ready to run the bots in production,
 
 #### Dry run wallet
 The ```dry_run_wallet``` in line 9 controls the balance available to the bots during backtesting and hyperoptimization.  The default is
-1,000.  Set it to balance you plan to risk in production to get accurate results from the backtesting.
+1,000.  Set it to the balance you plan to risk in production to get accurate results from the backtesting.
 
 #### Exchange
 The ```exchange``` option in line 35 controls where the bots will be trading.  In my case, I set it to ```binance``` but
@@ -66,7 +66,7 @@ option is **not** checked for your new API keys.
 The ```stake_currency``` option in line 3 controls the currency the bot will use for trading.  I set it to *USDT* but
 you can use any currency supported by your exchange.
 
-The ```pair_whitelist``` option in line 43 tells the bot which assets it can buy and sell.  All pairs must be quoted
+The ```pair_whitelist``` option in line 43 tells the bots which assets they can buy and sell.  All pairs must be quoted
 in the stake currency (in my case, USDT).  My config include 50 pairs.  I selected those pairs based on trading volume,
 excluding stable coins and meme coins/tokens.
 
@@ -81,7 +81,7 @@ The ```timeframe``` option in line 7 controls the ticker interval.  I set it to 
 interval available at your exchange.
 
 #### Telegram
-You can control your bot remotely using *Telegram*.  This is extremely convenient.  To enable it, you
+You can control your bots remotely using *Telegram*.  This is extremely convenient.  To enable it, you
 must add a Telegram token and chat id to lines 130 and 131. Clear instructions on how to set this up
 are available in the [documentation](https://www.freqtrade.io/en/stable/telegram-usage/).
 
@@ -105,7 +105,7 @@ docker-compose run --rm freqtrade download-data --exchange binance -t 1h --timer
 Make sure to replace ```binance``` with the name of your exchange, ```1h``` with your timeframe,
 and ```20210101-20210620``` with the range of dates for which the data should be downloaded.
 
-### Strategy
+### Strategies
 The ```user_data/strategies``` directory contains the strategies.  In my case, there are
 three strategies:
 
@@ -114,8 +114,8 @@ This strategy was the starting point.  It is based in two technical analysis ind
 - the [Relative Strength Index](https://www.investopedia.com/terms/r/rsi.asp), and
 - the [Bollinger Bands](https://www.investopedia.com/terms/b/bollingerbands.asp).
 
-The strategy sets sensible defaults for RSI and BB for the buy and sell spaces, as well
-as a range of values ```hyperopt``` will use while searching for optimal results.
+This strategy sets sensible defaults for RSI and BB for the buy and sell spaces, as well
+as ranges of values ```hyperopt``` will use while searching for optimal results.
 
 #### BBRSI Strategy 1h Short Trade Duration
 This strategy is based on the naive strategy, but the parameters were optimized against the ShortTradeDurHyperOptLoss loss 
