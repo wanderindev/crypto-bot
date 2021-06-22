@@ -167,15 +167,16 @@ After optimizing the strategies' parameters, I ran backtests for each strategy t
 make sure I got results consistent with the hyperopt results.
 
 #### BBRSI Strategy 1h Short Trade Duration
-To backtest the Short Trade Duration strategy run: 
+To backtest the Short Trade Duration optimized strategy run: 
 ```sh
 docker-compose run --rm freqtrade backtesting --datadir user_data/data/binance --export trades -s BBRSIStrategy1hShortTradeDur -i 1h --timerange=20210524-20210620
 ```
 This strategy produced a 10.23% profit in 28 days:
 
-=========================================================== BACKTESTING REPORT ===========================================================
+##### Backtesting report 
+
 |       Pair |   Buys |   Avg Profit % |   Cum Profit % |   Tot Profit USDT |   Tot Profit % |    Avg Duration |   Win  Draw  Loss  Win% |
-|------------+--------+----------------+----------------+-------------------+----------------+-----------------+-------------------------|
+|------------|--------|----------------|----------------|-------------------|----------------|-----------------|-------------------------|
 |   ICX/USDT |      5 |           6.09 |          30.44 |            22.854 |           0.91 |        12:12:00 |     5     0     0   100 |
 | MATIC/USDT |      5 |           5.20 |          25.99 |            19.511 |           0.78 |        17:12:00 |     3     2     0   100 |
 |  DATA/USDT |      4 |           6.35 |          25.41 |            19.073 |           0.76 |        14:00:00 |     4     0     0   100 |
@@ -228,26 +229,29 @@ This strategy produced a 10.23% profit in 28 days:
 |  HBAR/USDT |      2 |          -6.55 |         -13.10 |            -9.832 |          -0.39 |  1 day, 4:00:00 |     0     1     1     0 |
 |      TOTAL |    200 |           1.70 |         340.75 |           255.817 |          10.23 |        20:01:00 |   121    50    29  60.5 |
 
-======================================================= SELL REASON STATS ========================================================
+##### Sell reason stats
+
 |        Sell Reason |   Sells |   Win  Draws  Loss  Win% |   Avg Profit % |   Cum Profit % |   Tot Profit USDT |   Tot Profit % |
-|--------------------+---------+--------------------------+----------------+----------------+-------------------+----------------|
+|--------------------|---------|--------------------------|----------------|----------------|-------------------|----------------|
 |                roi |     105 |     55    50     0   100 |           1.96 |         205.98 |           154.643 |           6.24 |
 | trailing_stop_loss |      58 |     41     0    17  70.7 |           1.62 |          93.96 |            70.538 |           2.85 |
 |        sell_signal |      33 |     25     0     8  75.8 |           2.3  |          75.91 |            56.988 |           2.3  |
 |         force_sell |       4 |      0     0     4     0 |          -8.78 |         -35.1  |           -26.352 |          -1.06 |
 
-========================================================= LEFT OPEN TRADES REPORT =========================================================
+##### Left open trades report
+
 |       Pair |   Buys |   Avg Profit % |   Cum Profit % |   Tot Profit USDT |   Tot Profit % |     Avg Duration |   Win  Draw  Loss  Win% |
-|------------+--------+----------------+----------------+-------------------+----------------+------------------+-------------------------|
+|------------|--------|----------------|----------------|-------------------|----------------|------------------|-------------------------|
 |   BTT/USDT |      1 |          -4.22 |          -4.22 |            -3.169 |          -0.13 |   1 day, 9:00:00 |     0     0     1     0 |
 |   DOT/USDT |      1 |          -9.46 |          -9.46 |            -7.102 |          -0.28 |  2 days, 5:00:00 |     0     0     1     0 |
 | 1INCH/USDT |      1 |          -9.69 |          -9.69 |            -7.271 |          -0.29 |  2 days, 6:00:00 |     0     0     1     0 |
 |   ETH/USDT |      1 |         -11.74 |         -11.74 |            -8.810 |          -0.35 | 3 days, 11:00:00 |     0     0     1     0 |
 |      TOTAL |      4 |          -8.78 |         -35.10 |           -26.352 |          -1.05 |  2 days, 7:45:00 |     0     0     4     0 |
 
-=============== SUMMARY METRICS ===============
+##### Summary metrics 
+
 | Metric                | Value               |
-|-----------------------+---------------------|
+|-----------------------|---------------------|
 | Backtesting from      | 2021-05-24 00:00:00 |
 | Backtesting to        | 2021-06-20 00:00:00 |
 | Max open trades       | 33                  |
@@ -282,18 +286,19 @@ This strategy produced a 10.23% profit in 28 days:
 | Drawdown Start        | 2021-06-06 18:00:00 |
 | Drawdown End          | 2021-06-08 15:00:00 |
 | Market change         | -1.63%              |
-===============================================
+
 
 #### BBRSI Strategy 1h Sortino
-To backtest the Sortino strategy run: 
+To backtest the Sortino optimized strategy run: 
 ```sh
 docker-compose run --rm freqtrade backtesting --datadir user_data/data/binance --export trades -s BBRSIStrategy1hSortino -i 1h --timerange=20210524-20210620
 ```
 This strategy produced a 6.85% profit in 28 days:
 
-=========================================================== BACKTESTING REPORT ===========================================================
+##### Backtesting report 
+
 |       Pair |   Buys |   Avg Profit % |   Cum Profit % |   Tot Profit USDT |   Tot Profit % |    Avg Duration |   Win  Draw  Loss  Win% |
-|------------+--------+----------------+----------------+-------------------+----------------+-----------------+-------------------------|
+|------------|--------|----------------|----------------|-------------------|----------------|-----------------|-------------------------|
 |  DATA/USDT |      2 |          15.18 |          30.37 |            22.800 |           0.91 |         9:30:00 |     2     0     0   100 |
 |  RUNE/USDT |      2 |          11.44 |          22.88 |            17.175 |           0.69 |        23:30:00 |     2     0     0   100 |
 |   SXP/USDT |      2 |           7.69 |          15.38 |            11.550 |           0.46 |  1 day, 5:30:00 |     2     0     0   100 |
@@ -346,20 +351,23 @@ This strategy produced a 6.85% profit in 28 days:
 |   XRP/USDT |      1 |           0.00 |           0.00 |             0.000 |           0.00 | 1 day, 17:00:00 |     0     1     0     0 |
 |      TOTAL |     40 |           5.70 |         228.08 |           171.228 |           6.85 |  1 day, 9:44:00 |    33     7     0   100 |
 
-======================================================= SELL REASON STATS ========================================================
+##### Sell reason stats
+
 |        Sell Reason |   Sells |   Win  Draws  Loss  Win% |   Avg Profit % |   Cum Profit % |   Tot Profit USDT |   Tot Profit % |
-|--------------------+---------+--------------------------+----------------+----------------+-------------------+----------------|
+|--------------------|---------|--------------------------|----------------|----------------|-------------------|----------------|
 |                roi |      39 |     32     7     0   100 |           5.61 |         218.88 |           164.325 |           6.63 |
 | trailing_stop_loss |       1 |      1     0     0   100 |           9.2  |           9.2  |             6.903 |           0.28 |
 
-====================================================== LEFT OPEN TRADES REPORT ======================================================
+##### Left open trades report
+
 |   Pair |   Buys |   Avg Profit % |   Cum Profit % |   Tot Profit USDT |   Tot Profit % |   Avg Duration |   Win  Draw  Loss  Win% |
-|--------+--------+----------------+----------------+-------------------+----------------+----------------+-------------------------|
+|--------|--------|----------------|----------------|-------------------|----------------|----------------|-------------------------|
 |  TOTAL |      0 |           0.00 |           0.00 |             0.000 |           0.00 |           0:00 |     0     0     0     0 |
 
-================== SUMMARY METRICS ==================
+##### Summary metrics 
+
 | Metric                | Value                     |
-|-----------------------+---------------------------|
+|-----------------------|---------------------------|
 | Backtesting from      | 2021-05-24 00:00:00       |
 | Backtesting to        | 2021-06-20 00:00:00       |
 | Max open trades       | 33                        |
@@ -394,7 +402,7 @@ This strategy produced a 6.85% profit in 28 days:
 | Drawdown Start        | 1970-01-01 00:00:00+00:00 |
 | Drawdown End          | 1970-01-01 00:00:00+00:00 |
 | Market change         | -1.63%                    |
-=====================================================	
+	
 
 ### Deployment
 
