@@ -124,10 +124,11 @@ function by running 20 hyperopt sets of 1000 epochs each for the default spaces:
 docker-compose run --rm freqtrade hyperopt --config user_data/config.json --hyperopt-loss ShortTradeDurHyperOptLoss --strategy BBRSIStrategy1hShortTradeDur -i 1h --timerange=20210524-20210620 --epochs 1000
 ```
 Once the optimized parameters were introduced into the strategy, I ran another 
-5 hyperopt sets of 1000 epoch each for the trailing space.  The best result from these runs were also introduced into the strategy.
+5 hyperopt sets of 1000 epoch each for the trailing space:  
 ```sh
 docker-compose run --rm freqtrade hyperopt --config user_data/config.json --hyperopt-loss ShortTradeDurHyperOptLoss --strategy BBRSIStrategy1hShortTradeDur -i 1h --timerange=20210524-20210620 --epochs 1000 --spaces trailing
 ```
+The best result from these runs were also introduced into the strategy.
 
 #### BBRSI Strategy 1h Sortino
 This strategy is based on the naive strategy, but the parameters were optimized against the SortinoHyperOptLoss loss 
@@ -136,10 +137,11 @@ function by running 20 hyperopt sets of 1000 epochs each for the default spaces:
 docker-compose run --rm freqtrade hyperopt --config user_data/config.json --hyperopt-loss SortinoHyperOptLoss --strategy BBRSIStrategy1hSortino -i 1h --timerange=20210524-20210620 --epochs 1000
 ```
 Once the optimized parameters were introduced into the strategy, I ran another 
-5 hyperopt sets of 1000 epoch each for the trailing space.  The best result from these runs were also introduced into the strategy.
+5 hyperopt sets of 1000 epoch each for the trailing space:
 ```sh
 docker-compose run --rm freqtrade hyperopt --config user_data/config.json --hyperopt-loss SortinoHyperOptLoss --strategy BBRSIStrategy1hSortino -i 1h --timerange=20210524-20210620 --epochs 1000 --spaces trailing
 ```
+The best result from these runs were also introduced into the strategy.
 
 You should get familiar with the Hyperopt [documentation](https://www.freqtrade.io/en/stable/hyperopt/).
 
@@ -405,69 +407,67 @@ This strategy produced a 6.85% profit in 28 days:
 	
 
 ### Deployment
+Once happy with the optimized strategies, it's time to deploy the bots to production.  You can deploy either bot or both.  The Sortino
+optimized bot give a lower return with almost no volatility.  The Short Trade Duration optimized bot provides better returns but greater
+volatility.  I decided to deploy both balance returns and volatility.
 
-Once happy with the optimized strategy, it's time to deploy the bot to production.  For this, I created
-a  4GB/2CPU droplet in DigitalOcean with a 10GB block storage volume for persistence using the Docker Marketplace app.  
-The monthly cost is $25.
+To deploy de bots, I created a  4GB/2CPU droplet in DigitalOcean with a 10GB block storage volume for persistence 
+using the Docker Marketplace app. The monthly cost for this droplet is $25.  You could try using a cheaper droplet
+but the Freqtrade documentation recommends deploying to a 2CPU machine.
 
 I create the droplet in the San Francisco datacenter because it gave me the lowest latency (less than 1ms) to the Binance
 API servers (https://api.binance.com).
 
-Once created, ssh into the droplet, go to the block storage volume, clone the repository, and cd into the project.
-
+Once the droplet is created, ssh into it, go to the block storage volume, create a directory for the first bot, 
+cd into it, and clone the repository:
 ```sh
 cd /mnt/volume-sfo3-01
-git clone https://github.com/wanderindev/crypto-bot.git
-cd crypto-bot
+mkdir bbrsi_1h_sortino
+cd bbrsi_1h_sortino
+git clone https://github.com/wanderindev/crypto-bot.git .
 ```
 
-The bot will need permissions to write to the logs file.
+Open the ```docker-compose.yml``` file:
+```sh
+sudo vi docker-compose.yml
+```
+and make sure the container name (line 14) is set to ```bbrsi_1h_sortino``` and the strategy
+is set to ```BBRSIStrategy1hSortino```. Save and exit.
+
+Rename ```config.json.example``` to ```config.json```:
+```sh
+mv user_data/config.json.example user_data/config.json
+```
+
+Open the ```config.json``` file:
+```sh
+sudo vi user_data/config.json
+```
+Set the ```dry_run``` (line 8) to ```false```, enter your Binance API keys (lines 37 and 38), and
+your Telegram bot token and chat id (lines 130 and 131). Save and exit.
+
+The bot will need permissions to write to the logs file:
 ```sh
 sudo chmod a+rwx user_data/logs/freqtrade.log
 ```
 
-### Dry-run
-
-To be ultra-certain that the strategy works, you should run it against live data with fake money
-for several days and evaluate the results.  Since the ```dry-run``` option in line 8 of ```config.json```
-is set to true, just run:
-
+Start the bot:
 ```sh
 docker-compose up -d
 ```
 
-If you connected Telegram to the bot, you will start getting status messages.
+You should start receiving messages from the bot in your Telegram.
 
-If you need to look at the logs for debugging, use:
+If you wish to also deploy the Short Trade Duration bot, repeat the instructions above, replacing sortino with shorttradedur
+where appropriate.  Also, create another Telegram bot and use the new token to control this bot.  That way you can control
+each bot separately.
 
+### Logs
+If you need to debug, take a look at the bot's logs:
 ```sh
 docker-compose logs -f
 ```
-
-You can shut down the bot with:
-
-```sh
-docker-compose down
-```
-
-
-### Live trading
-
-To run the bot with real money, edit ```config.json```:
-
-```sh
-sudo vi user_data/config.json
-```
-
-Go to ```dry-run``` in line 8 and press ```:i``` and change it to ```false```.
-
-Press ```:wq``` to save and exit.
-
-Run the bot with:
-
-```sh
-docker-compose up -d
-```
+Fix any issues and restart the bot.
 
 ## Author
 
